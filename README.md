@@ -53,15 +53,15 @@ Develop a turn-based 5x5 board game where two players compete using 5 pieces eac
     ```
 3. **Install Dependencies:**
 
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
 4. **Start the Server:**
 
-```bash
-node server.js
-```
+   ```bash
+   node server.js
+   ```
 
 The server will start and listen on port 8080 by default. You can access it at http://localhost:8080.
 
