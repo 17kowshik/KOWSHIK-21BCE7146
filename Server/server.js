@@ -26,6 +26,7 @@ let gameState = {
     turn: 'A',
     winner: null,
     moves: [], // Track moves
+    captures: [], // Track captures
     lastMove: null // Track the last valid move
 };
 
@@ -131,9 +132,11 @@ wss.on('connection', (ws) => {
                 return;
             }
 
-            // Only Hero1 and Hero2 can capture
-            if (character === 'H1' || character === 'H2') {
-                removeOpponentCharactersInPath(row, col, newRow, newCol, character);
+            // Handle captures
+            if (gameState.grid[newRow][newCol] && !gameState.grid[newRow][newCol].startsWith(player)) {
+                const capturedPiece = gameState.grid[newRow][newCol];
+                gameState.captures.push(`Player ${player}'s ${character} captured Player ${capturedPiece.split('-')[0]}'s ${capturedPiece.split('-')[1]}`);
+                gameState.grid[newRow][newCol] = null;
             }
 
             // Move the character
@@ -171,31 +174,6 @@ const findCharacterPosition = (character) => {
     }
     return [null, null];
 };
-
-const removeOpponentCharactersInPath = (row1, col1, row2, col2, character) => {
-    // Only proceed if the character is H1 or H2
-    if (character !== 'H1' && character !== 'H2') {
-        return;
-    }
-
-    const directionRow = Math.sign(row2 - row1);
-    const directionCol = Math.sign(col2 - col1);
-
-    let currentRow = row1 + directionRow;
-    let currentCol = col1 + directionCol;
-
-    while (currentRow !== row2 || currentCol !== col2) {
-        if (currentRow >= 0 && currentRow < 5 && currentCol >= 0 && currentCol < 5) {
-            if (gameState.grid[currentRow][currentCol] && !gameState.grid[currentRow][currentCol].startsWith(character.charAt(0))) {
-                // Remove the opponent's character
-                gameState.grid[currentRow][currentCol] = null;
-            }
-        }
-        currentRow += directionRow;
-        currentCol += directionCol;
-    }
-};
-
 // Convert direction codes to descriptive text
 const getMoveDescription = (direction) => {
     switch (direction) {

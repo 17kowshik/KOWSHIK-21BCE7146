@@ -8,6 +8,7 @@ const playerAControls = document.getElementById('player-a-controls');
 const playerBControls = document.getElementById('player-b-controls');
 const gameStatus = document.getElementById('game-status');
 const moveHistoryDiv = document.getElementById('move-history');
+const captureHistoryDiv = document.getElementById('capture-history');
 
 // Initialize the game board
 const initializeBoard = (state) => {
@@ -25,6 +26,7 @@ const initializeBoard = (state) => {
         }
     }
     updateGameStatus(state);
+    updateCaptureHistory(state.captures); // Update capture history
 };
 
 // Handle incoming messages from the server
@@ -79,6 +81,16 @@ const addMoveToHistory = (move) => {
     moveHistoryDiv.appendChild(moveParagraph);
 };
 
+// Update the capture history
+const updateCaptureHistory = (captures) => {
+    captureHistoryDiv.innerHTML = ''; // Clear the existing history
+    captures.forEach(capture => {
+        const captureParagraph = document.createElement('p');
+        captureParagraph.textContent = capture;
+        captureHistoryDiv.appendChild(captureParagraph);
+    });
+};
+
 // Event listeners for submitting moves
 playerASubmitButton.addEventListener('click', () => {
     const command = playerAMoveInput.value.trim();
@@ -95,18 +107,3 @@ playerBSubmitButton.addEventListener('click', () => {
         playerBMoveInput.value = '';
     }
 });
-
-// Convert direction codes to descriptive text
-const getMoveDescription = (direction) => {
-    switch (direction) {
-        case 'F': return 'forward';
-        case 'B': return 'backward';
-        case 'L': return 'left';
-        case 'R': return 'right';
-        case 'FL': return 'forward-left';
-        case 'FR': return 'forward-right';
-        case 'BL': return 'backward-left';
-        case 'BR': return 'backward-right';
-        default: return 'unknown direction';
-    }
-};

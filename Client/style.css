@@ -95,3 +95,9 @@ button:hover {
     background-color: #333;
     border-radius: 5px;
 }
+.divbox{
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #333;
+    border-radius: 5px;
+}
