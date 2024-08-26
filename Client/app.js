@@ -7,6 +7,7 @@ const playerBSubmitButton = document.getElementById('player-b-submit');
 const playerAControls = document.getElementById('player-a-controls');
 const playerBControls = document.getElementById('player-b-controls');
 const gameStatus = document.getElementById('game-status');
+const moveHistoryDiv = document.getElementById('move-history');
 
 // Initialize the game board
 const initializeBoard = (state) => {
@@ -73,10 +74,9 @@ const displayError = (message) => {
 
 // Add a move to the move history
 const addMoveToHistory = (move) => {
-    const historyDiv = document.getElementById('move-history');
     const moveParagraph = document.createElement('p');
     moveParagraph.textContent = move;
-    historyDiv.appendChild(moveParagraph);
+    moveHistoryDiv.appendChild(moveParagraph);
 };
 
 // Event listeners for submitting moves
