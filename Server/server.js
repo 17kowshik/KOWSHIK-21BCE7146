@@ -9,12 +9,12 @@ const wss = new WebSocket.Server({ server });
 
 app.use(express.static('Client'));
 
-// Default route
+// Serving the default route
 app.get('/', (req, res) => {
     res.sendFile(path.join('Client', 'index.html'));
 });
 
-// Initial game state
+// Initializing the game state
 let gameState = {
     grid: [
         ['A-P1', 'A-P2', 'A-H1', 'A-H2', 'A-P3'],
@@ -25,12 +25,12 @@ let gameState = {
     ],
     turn: 'A',
     winner: null,
-    moves: [], // Track moves
-    captures: [], // Track captures
-    lastMove: null // Track the last valid move
+    moves: [], // Tracking moves
+    captures: [], // Tracking captures
+    lastMove: null // Tracking the last valid move
 };
 
-// Broadcast the game state to all connected clients
+// Broadcasting the game state to all connected clients
 const broadcastGameState = () => {
     const stateMessage = JSON.stringify({ type: 'state', state: gameState });
     wss.clients.forEach(client => {
@@ -41,7 +41,7 @@ const broadcastGameState = () => {
     console.log('Broadcasted game state:', gameState);
 };
 
-// Check for a winner after each move
+// Checking for a winner after each move
 const checkForWinner = () => {
     const playerAHasCharacters = gameState.grid.flat().some(cell => cell && cell.startsWith('A-'));
     const playerBHasCharacters = gameState.grid.flat().some(cell => cell && cell.startsWith('B-'));
@@ -53,7 +53,7 @@ const checkForWinner = () => {
     }
 };
 
-// Handle client connection and messages
+// Handling client connection and messages
 wss.on('connection', (ws) => {
     console.log('Client connected');
     ws.send(JSON.stringify({ type: 'state', state: gameState }));
@@ -85,7 +85,7 @@ wss.on('connection', (ws) => {
                 case 'P1':
                 case 'P2':
                 case 'P3':
-                    // Pawn movement
+                    // Handling Pawn movement
                     switch (direction) {
                         case 'L': newCol = Math.max(0, col - 1); break;
                         case 'R': newCol = Math.min(4, col + 1); break;
@@ -93,7 +93,7 @@ wss.on('connection', (ws) => {
                         case 'B': newRow = gameState.turn === 'A' ? Math.max(0, row - 1) : Math.min(4, row + 1); break;
                     }
 
-                    // Check if the destination cell is occupied by an opponent's piece
+                    // Checking if the destination cell is occupied by an opponent's piece
                     if (gameState.grid[newRow][newCol] && gameState.grid[newRow][newCol].startsWith(gameState.turn === 'A' ? 'B-' : 'A-')) {
                         ws.send(JSON.stringify({
                             type: 'error',
@@ -104,7 +104,7 @@ wss.on('connection', (ws) => {
                     }
                     break;
                 case 'H1':
-                    // Hero1 movement
+                    // Handling Hero1 movement
                     switch (direction) {
                         case 'L': newRow = row; newCol = Math.max(0, col - 2); break;
                         case 'R': newRow = row; newCol = Math.min(4, col + 2); break;
@@ -113,7 +113,7 @@ wss.on('connection', (ws) => {
                     }
                     break;
                 case 'H2':
-                    // Hero2 movement
+                    // Handling Hero2 movement
                     switch (direction) {
                         case 'FL': newRow = gameState.turn === 'A' ? Math.min(4, row + 2) : Math.max(0, row - 2); newCol = Math.max(0, col - 2); break;
                         case 'FR': newRow = gameState.turn === 'A' ? Math.min(4, row + 2) : Math.max(0, row - 2); newCol = Math.min(4, col + 2); break;
@@ -132,14 +132,14 @@ wss.on('connection', (ws) => {
                 return;
             }
 
-            // Handle captures
+            // Handling captures
             if (gameState.grid[newRow][newCol] && !gameState.grid[newRow][newCol].startsWith(player)) {
                 const capturedPiece = gameState.grid[newRow][newCol];
                 gameState.captures.push(`Player ${player}'s ${character} captured Player ${capturedPiece.split('-')[0]}'s ${capturedPiece.split('-')[1]}`);
                 gameState.grid[newRow][newCol] = null;
             }
 
-            // Move the character
+            // Moving the character
             gameState.grid[row][col] = null;
             gameState.grid[newRow][newCol] = `${player}-${character}`;
             gameState.lastMove = `Player ${player} moved ${character} ${getMoveDescription(direction)}`;
@@ -163,7 +163,7 @@ wss.on('connection', (ws) => {
     });
 });
 
-// Find the position of a character on the grid
+// Finding the position of a character on the grid
 const findCharacterPosition = (character) => {
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 5; j++) {
@@ -174,7 +174,8 @@ const findCharacterPosition = (character) => {
     }
     return [null, null];
 };
-// Convert direction codes to descriptive text
+
+// Converting direction codes to descriptive text
 const getMoveDescription = (direction) => {
     switch (direction) {
         case 'F': return 'forward';
@@ -189,6 +190,7 @@ const getMoveDescription = (direction) => {
     }
 };
 
+// Starting the server
 server.listen(8080, () => {
     console.log('Server is listening on port 8080');
 });

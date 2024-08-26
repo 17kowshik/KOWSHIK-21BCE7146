@@ -10,7 +10,7 @@ const gameStatus = document.getElementById('game-status');
 const moveHistoryDiv = document.getElementById('move-history');
 const captureHistoryDiv = document.getElementById('capture-history');
 
-// Initialize the game board
+// Initializing the game board
 const initializeBoard = (state) => {
     gameBoard.innerHTML = '';
     for (let i = 0; i < 5; i++) {
@@ -26,10 +26,10 @@ const initializeBoard = (state) => {
         }
     }
     updateGameStatus(state);
-    updateCaptureHistory(state.captures); // Update capture history
+    updateCaptureHistory(state.captures);
 };
 
-// Handle incoming messages from the server
+// Handling incoming messages from the server
 ws.onmessage = (event) => {
     const message = JSON.parse(event.data);
     if (message.type === 'state') {
@@ -43,13 +43,13 @@ ws.onmessage = (event) => {
     }
 };
 
-// Send the move command to the server
+// Sending the move command to the server
 const sendMove = (command) => {
     const player = document.getElementById('player-a-controls').style.display === 'block' ? 'A' : 'B';
     ws.send(JSON.stringify({ type: 'move', player, character: command.split(':')[0], direction: command.split(':')[1] }));
 };
 
-// Toggle the controls for the current player
+// Toggling the controls for the current player
 const togglePlayerControls = (currentTurn) => {
     if (currentTurn === 'A') {
         playerAControls.style.display = 'block';
@@ -60,7 +60,7 @@ const togglePlayerControls = (currentTurn) => {
     }
 };
 
-// Update the game status display
+// Updating the game status display
 const updateGameStatus = (state) => {
     let statusText = `Current Turn: Player ${state.turn}`;
     if (state.winner) {
@@ -69,21 +69,21 @@ const updateGameStatus = (state) => {
     gameStatus.textContent = statusText;
 };
 
-// Display error messages to the user
+// Displaying error messages to the user
 const displayError = (message) => {
     gameStatus.textContent = `Error: ${message}`;
 };
 
-// Add a move to the move history
+// Adding a move to the move history
 const addMoveToHistory = (move) => {
     const moveParagraph = document.createElement('p');
     moveParagraph.textContent = move;
     moveHistoryDiv.appendChild(moveParagraph);
 };
 
-// Update the capture history
+// Updating the capture history
 const updateCaptureHistory = (captures) => {
-    captureHistoryDiv.innerHTML = ''; // Clear the existing history
+    captureHistoryDiv.innerHTML = '';
     captures.forEach(capture => {
         const captureParagraph = document.createElement('p');
         captureParagraph.textContent = capture;
@@ -91,7 +91,7 @@ const updateCaptureHistory = (captures) => {
     });
 };
 
-// Event listeners for submitting moves
+// Adding event listeners for submitting moves
 playerASubmitButton.addEventListener('click', () => {
     const command = playerAMoveInput.value.trim();
     if (command) {
