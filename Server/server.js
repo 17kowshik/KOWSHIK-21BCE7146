@@ -25,7 +25,8 @@ let gameState = {
     ],
     turn: 'A',
     winner: null,
-    moves: [] // Track moves
+    moves: [], // Track moves
+    lastMove: null // Track the last valid move
 };
 
 // Broadcast the game state to all connected clients
@@ -36,7 +37,7 @@ const broadcastGameState = () => {
             client.send(stateMessage);
         }
     });
-    console.log('Broadcasted game state:', gameState); // Log broadcasted state
+    console.log('Broadcasted game state:', gameState);
 };
 
 // Check for a winner after each move
@@ -138,6 +139,7 @@ wss.on('connection', (ws) => {
             // Move the character
             gameState.grid[row][col] = null;
             gameState.grid[newRow][newCol] = `${player}-${character}`;
+            gameState.lastMove = `Player ${player} moved ${character} ${getMoveDescription(direction)}`;
 
             console.log('Updated game state:', gameState);
 
@@ -191,6 +193,21 @@ const removeOpponentCharactersInPath = (row1, col1, row2, col2, character) => {
         }
         currentRow += directionRow;
         currentCol += directionCol;
+    }
+};
+
+// Convert direction codes to descriptive text
+const getMoveDescription = (direction) => {
+    switch (direction) {
+        case 'F': return 'forward';
+        case 'B': return 'backward';
+        case 'L': return 'left';
+        case 'R': return 'right';
+        case 'FL': return 'forward-left';
+        case 'FR': return 'forward-right';
+        case 'BL': return 'backward-left';
+        case 'BR': return 'backward-right';
+        default: return 'unknown direction';
     }
 };
 

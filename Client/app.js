@@ -6,7 +6,7 @@ const playerASubmitButton = document.getElementById('player-a-submit');
 const playerBSubmitButton = document.getElementById('player-b-submit');
 const playerAControls = document.getElementById('player-a-controls');
 const playerBControls = document.getElementById('player-b-controls');
-const gameStatus = document.getElementById('game-status'); // New element to display game status
+const gameStatus = document.getElementById('game-status');
 
 // Initialize the game board
 const initializeBoard = (state) => {
@@ -17,14 +17,13 @@ const initializeBoard = (state) => {
             cell.className = 'grid-cell';
             if (state.grid[i][j]) {
                 cell.textContent = state.grid[i][j];
-                // Add player-specific class for text color
                 const player = state.grid[i][j].split('-')[0];
                 cell.classList.add(player === 'A' ? 'player-a' : 'player-b');
             }
             gameBoard.appendChild(cell);
         }
     }
-    updateGameStatus(state); // Update the status after initializing the board
+    updateGameStatus(state);
 };
 
 // Handle incoming messages from the server
@@ -33,6 +32,9 @@ ws.onmessage = (event) => {
     if (message.type === 'state') {
         initializeBoard(message.state);
         togglePlayerControls(message.state.turn);
+        if (message.state.lastMove) {
+            addMoveToHistory(message.state.lastMove);
+        }
     } else if (message.type === 'error') {
         displayError(message.message);
     }
@@ -69,20 +71,19 @@ const displayError = (message) => {
     gameStatus.textContent = `Error: ${message}`;
 };
 
+// Add a move to the move history
+const addMoveToHistory = (move) => {
+    const historyDiv = document.getElementById('move-history');
+    const moveParagraph = document.createElement('p');
+    moveParagraph.textContent = move;
+    historyDiv.appendChild(moveParagraph);
+};
+
 // Event listeners for submitting moves
 playerASubmitButton.addEventListener('click', () => {
     const command = playerAMoveInput.value.trim();
     if (command) {
-        const [character, direction] = command.split(':');
-        const moveDescription = `Player A moved ${character} ${getMoveDescription(direction)}`;
         sendMove(command);
-
-        // Add the move to the move history
-        const historyDiv = document.getElementById('move-history');
-        const moveParagraph = document.createElement('p');
-        moveParagraph.textContent = moveDescription;
-        historyDiv.appendChild(moveParagraph);
-
         playerAMoveInput.value = '';
     }
 });
@@ -90,16 +91,7 @@ playerASubmitButton.addEventListener('click', () => {
 playerBSubmitButton.addEventListener('click', () => {
     const command = playerBMoveInput.value.trim();
     if (command) {
-        const [character, direction] = command.split(':');
-        const moveDescription = `Player B moved ${character} ${getMoveDescription(direction)}`;
         sendMove(command);
-
-        // Add the move to the move history
-        const historyDiv = document.getElementById('move-history');
-        const moveParagraph = document.createElement('p');
-        moveParagraph.textContent = moveDescription;
-        historyDiv.appendChild(moveParagraph);
-
         playerBMoveInput.value = '';
     }
 });
